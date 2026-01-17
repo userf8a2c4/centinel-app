@@ -8,277 +8,162 @@ interface SystemViewProps {
   colorBlindMode: boolean;
 }
 
-interface DiaryEntry {
-  date: string;
-  type: 'FIX' | 'CORE' | 'UI' | 'SECURITY';
-  msg: string;
-  file: string;
-}
-
 const SystemView: React.FC<SystemViewProps> = ({ lang, theme, colorBlindMode }) => {
-  const [activeTab, setActiveTab] = useState<'config' | 'diary' | 'intent'>('config');
-  const [selectedEntry, setSelectedEntry] = useState<DiaryEntry | null>(null);
-  const [fileContent, setFileContent] = useState<string | null>(null);
-  const [loadingFile, setLoadingFile] = useState(false);
+  const [activeTab, setActiveTab] = useState<'ethos' | 'rules' | 'glossary' | 'diary'>('ethos');
+  const isDark = theme === 'dark';
 
   const t = {
-    ES: {
-      tabs: { config: "CONFIGURACIÓN", diary: "DEV DIARY", intent: "MANIFIESTO" },
-      config: {
-        title: "SENSORES DE AUDITORÍA ACTIVOS",
-        rule: "REGLA", status: "ESTADO", value: "UMBRAL",
-        rules: [
-          { id: "B_SIGMA", name: "Análisis Benford (Sigma 3)", status: "ACTIVO", val: "5.0%", desc: "Detecta desviaciones matemáticas en el primer dígito." },
-          { id: "C_INFL", name: "Detección de Inflación Censo", status: "ACTIVO", val: "> 95%", desc: "Alerta centros con más votos que votantes registrados." },
-          { id: "H_INTEG", name: "Integridad Hash SHA-256", status: "ACTIVO", val: "STRICT", desc: "Verifica que el JSON no haya sido modificado post-emisión." },
-          { id: "P_DYN", name: "Delta de Participación Dinámica", status: "MONITOREO", val: "+20% /h", desc: "Detecta picos de carga no lineales." }
+    ES: { 
+      tabs: { ethos: "ETHOS", rules: "REGLAS", glossary: "GLOSARIO", diary: "DIARIO" },
+      ethos: {
+        title: "MANIFIESTO CENTINEL",
+        subtitle: "TRANSAPARENCIA RADICAL COMO DEFENSA CÍVICA",
+        text: "Centinel no es una herramienta partidaria. Es un nodo de auditoría forense diseñado para que cualquier ciudadano, sin importar su ideología, pueda verificar la integridad de los datos electorales. Nuestra premisa es simple: Sin datos íntegros, no hay democracia. Operamos bajo el principio de 'No confíes, verifica'.",
+        pillars: [
+          { t: "CRIPTOGRAFÍA", d: "Cada acta está respaldada por un hash SHA-256 inmutable." },
+          { t: "CERO DATOS", d: "No recolectamos cookies, IPs ni identidades de auditores." },
+          { t: "FORENSE", d: "Algoritmos automáticos detectan anomalías matemáticas en tiempo real." }
         ]
       },
-      diary: {
-        title: "DEV DIARY // REPOSITORIO CENTRAL",
-        inspect: "LEER DOCUMENTO",
-        back: "VOLVER AL ÍNDICE",
-        entries: [
-          { date: "2025-11-28", type: "CORE", msg: "Actualización de Estructura de Datos V4", file: "2025-11-28-v4-structure.md" },
-          { date: "2025-11-27", type: "SECURITY", msg: "Protocolos de Validación Criptográfica", file: "2025-11-27-crypto-validation.md" },
-          { date: "2025-11-26", type: "UI", msg: "Refactorización de Interfaz Forense", file: "2025-11-26-ui-refactor.md" }
-        ] as DiaryEntry[]
-      },
-      intent: {
-        title: "DECLARACIÓN DE INTENCIONES",
-        body: [
-          "CENTINEL no es un ente oficial, es un microscopio digital ciudadano.",
-          "Nuestra misión es la transparencia radical: cada dato debe ser rastreable hasta su origen criptográfico.",
-          "Neutralidad tecnológica: los algoritmos no tienen partido, solo procesan evidencias.",
-          "El código es abierto para que la vigilancia sea compartida y la verdad sea inmutable."
+      rules: {
+        title: "REGLAS DE CONSENSO",
+        items: [
+          "1. El sistema solo procesa actas con firma digital verificada.",
+          "2. Las anomalías se marcan automáticamente según la Ley de Benford.",
+          "3. Un centro se considera 'Crítico' si excede el 95% de participación.",
+          "4. Los datos se sincronizan cada 5 minutos con la red descentralizada."
         ]
-      }
+      },
+      glossary: [
+        { term: "SHA-256", desc: "Algoritmo criptográfico que genera una huella única para cada documento." },
+        { term: "LEY DE BENFORD", desc: "Frecuencia estadística natural de los dígitos en conjuntos de datos numéricos." },
+        { term: "OUTLIER", desc: "Punto de dato que se aleja significativamente del promedio del grupo." },
+        { term: "CHAIN OF CUSTODY", desc: "Rastreo ininterrumpido del origen de un acta desde su escaneo hasta su indexación." }
+      ],
+      diary: [
+        { date: "30 NOV 2025", event: "Iniciando auditoría de bloque 18,000. Detección de inyección en FM." },
+        { date: "29 NOV 2025", event: "Sincronización exitosa de nodos de reserva. Capacidad forense al 100%." }
+      ]
     },
-    EN: {
-      tabs: { config: "CONFIG", diary: "DEV DIARY", intent: "MANIFESTO" },
-      config: {
-        title: "ACTIVE AUDIT SENSORS",
-        rule: "RULE", status: "STATUS", value: "THRESHOLD",
-        rules: [
-          { id: "B_SIGMA", name: "Benford Analysis (Sigma 3)", status: "ACTIVE", val: "5.0%", desc: "Detects mathematical deviations in the first digit." },
-          { id: "C_INFL", name: "Census Inflation Detection", status: "ACTIVE", val: "> 95%", desc: "Alerts centers with more votes than registered voters." },
-          { id: "H_INTEG", name: "SHA-256 Hash Integrity", status: "ACTIVE", val: "STRICT", desc: "Verifies JSON was not modified post-issuance." },
-          { id: "P_DYN", name: "Dynamic Participation Delta", status: "MONITOR", val: "+20% /h", desc: "Detects non-linear load spikes." }
+    EN: { 
+      tabs: { ethos: "ETHOS", rules: "RULES", glossary: "GLOSSARY", diary: "DIARY" },
+      ethos: {
+        title: "CENTINEL MANIFESTO",
+        subtitle: "RADICAL TRANSPARENCY AS CIVIC DEFENSE",
+        text: "Centinel is not a partisan tool. It is a forensic audit node designed so that any citizen, regardless of ideology, can verify electoral data integrity. Our premise is simple: Without integral data, there is no democracy. We operate under the 'Don't trust, verify' principle.",
+        pillars: [
+          { t: "CRYPTOGRAPHY", d: "Each record is backed by an immutable SHA-256 hash." },
+          { t: "ZERO DATA", d: "We do not collect cookies, IPs, or auditor identities." },
+          { t: "FORENSICS", d: "Automated algorithms detect mathematical anomalies in real-time." }
         ]
       },
-      diary: {
-        title: "DEV DIARY // CENTRAL REPOSITORY",
-        inspect: "READ DOCUMENT",
-        back: "BACK TO INDEX",
-        entries: [
-          { date: "2025-11-28", type: "CORE", msg: "Data Structure Update V4", file: "2025-11-28-v4-structure.md" },
-          { date: "2025-11-27", type: "SECURITY", msg: "Cryptographic Validation Protocols", file: "2025-11-27-crypto-validation.md" },
-          { date: "2025-11-26", type: "UI", msg: "Forensic Interface Refactor", file: "2025-11-26-ui-refactor.md" }
-        ] as DiaryEntry[]
-      },
-      intent: {
-        title: "STATEMENT OF INTENT",
-        body: [
-          "CENTINEL is not an official entity; it is a citizen digital microscope.",
-          "Our mission is radical transparency: every data point must be traceable to its cryptographic origin.",
-          "Technological neutrality: algorithms have no party; they only process evidence.",
-          "Code is open so surveillance is shared and truth remains immutable."
+      rules: {
+        title: "CONSENSUS RULES",
+        items: [
+          "1. The system only processes records with verified digital signatures.",
+          "2. Anomalies are automatically flagged based on Benford's Law.",
+          "3. A center is considered 'Critical' if turnout exceeds 95%.",
+          "4. Data synchronizes every 5 minutes with the decentralized network."
         ]
-      }
+      },
+      glossary: [
+        { term: "SHA-256", desc: "Cryptographic algorithm generating a unique footprint for each document." },
+        { term: "BENFORD'S LAW", desc: "Natural statistical frequency of digits in numerical data sets." },
+        { term: "OUTLIER", desc: "Data point that deviates significantly from the group average." },
+        { term: "CHAIN OF CUSTODY", desc: "Uninterrupted tracking of a record's origin from scanning to indexing." }
+      ],
+      diary: [
+        { date: "NOV 30 2025", event: "Starting audit of block 18,000. Injection detection in FM." },
+        { date: "NOV 29 2025", event: "Backup nodes successfully synced. Forensic capacity at 100%." }
+      ]
     }
   }[lang];
 
-  const fetchDiaryFile = async (entry: DiaryEntry) => {
-    setLoadingFile(true);
-    setSelectedEntry(entry);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      // Contenido extenso simulado para probar el scroll
-      setFileContent(`---
-SOURCE: sentinel/Dev Diary/${entry.file}
-BRANCH: dev-v4
-INTEGRITY: SHA-256_VERIFIED
----
-
-# ${entry.msg}
-
-Documento técnico recuperado de la bitácora de desarrollo de Centinel. Este archivo detalla los cambios estructurales realizados para garantizar la transparencia radical del proceso.
-
-## Detalles de Implementación
-- Actualización de los punteros de configuración global.
-- Sincronización de los sensores de auditoría con la base de datos distribuida.
-- Refuerzo de la capa de visualización para dispositivos móviles.
-- Implementación de lógica de validación cruzada entre departamentos.
-- Optimización de los tiempos de respuesta del motor de renderizado forense.
-
-### Notas Técnicas Adicionales
-Para asegurar que cada usuario pueda verificar la procedencia de los datos, hemos implementado una capa de 'Truth-Sealing' en cada respuesta del servidor. Esto permite que el cliente valide el HASH localmente antes de mostrar cualquier gráfica.
-
-## Próximos Pasos
-1. Integración con nodos de observación internacional.
-2. Despliegue de la red de verificación redundante.
-3. Auditoría de código por parte de entidades independientes.
-
-> "El escrutinio público es la única garantía de integridad electoral."
-
-Este diario de desarrollo sirve como bitácora inmutable de cada decisión técnica tomada durante la vigencia del Proyecto CENTINEL. Invitamos a la comunidad a realizar auditorías de caja blanca sobre nuestra rama dev-v4.
-
----
-Sincronizado el: ${new Date().toISOString()}
-Firma Digital: [VERIFIED_SHA256_STAMP]
----`);
-    } catch (err) {
-      setFileContent("Error: No se pudo establecer conexión con el repositorio para recuperar el archivo .md");
-    } finally {
-      setLoadingFile(false);
-    }
-  };
-
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row w-full p-1 border border-[var(--card-border)] bg-[var(--card-bg)]">
-        {(['config', 'diary', 'intent'] as const).map((tab) => (
-          <button 
-            key={tab}
-            onClick={() => { setActiveTab(tab); setSelectedEntry(null); }} 
-            className={`px-4 py-2.5 text-[9px] md:text-[10px] font-black tracking-widest transition-all uppercase border-b md:border-b-0 md:border-r last:border-0 border-[var(--card-border)] ${activeTab === tab ? (colorBlindMode ? 'bg-white text-black' : 'bg-zinc-100 dark:bg-white dark:text-black text-black') : 'text-zinc-500 hover:text-current hover:bg-zinc-800/10'}`}
-          >
-            {t.tabs[tab]}
-          </button>
-        ))}
-      </div>
-
-      {activeTab === 'config' && (
-        <div className="bento-card overflow-hidden">
-          <div className="p-4 border-b border-[var(--card-border)] flex justify-between items-center bg-zinc-800/5">
-            <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-500">{t.config.title}</h3>
-            <span className="text-[8px] mono text-green-500 font-bold tracking-widest">LIVE_VALIDATION_ON</span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[500px]">
-              <thead>
-                <tr className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-zinc-500 border-b border-[var(--card-border)]">
-                  <th className="py-4 px-6">{t.config.rule}</th>
-                  <th className="py-4 px-6">{t.config.status}</th>
-                  <th className="py-4 px-6">{t.config.value}</th>
-                  <th className="py-4 px-6">DESCRIPTION</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--card-border)]">
-                {t.config.rules.map(rule => (
-                  <tr key={rule.id} className="hover:bg-zinc-800/5 transition-colors">
-                    <td className="py-4 px-6 text-[10px] font-black">{rule.name}</td>
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${rule.status === 'ACTIVO' || rule.status === 'ACTIVE' ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-yellow-500 animate-pulse'}`}></span>
-                        <span className="text-[9px] font-bold mono">{rule.status}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-6 text-[10px] mono font-bold text-blue-500">{rule.val}</td>
-                    <td className="py-4 px-6 text-[9px] text-zinc-500 mono leading-relaxed">{rule.desc}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div className="space-y-8 md:space-y-12 max-w-6xl mx-auto pb-20 animate-in fade-in duration-700">
+      <div className="flex justify-center mb-8 md:mb-16">
+        <div className={`flex w-full md:w-auto p-1 rounded-full border transition-all duration-500 overflow-x-auto no-scrollbar ${isDark ? 'bg-zinc-900/50 border-white/5 shadow-inner' : 'bg-white border-black/5 shadow-sm'}`}>
+          <div className="flex w-full md:w-auto min-w-max">
+            {(['ethos', 'rules', 'glossary', 'diary'] as const).map((tab) => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)} 
+                className={`flex-1 md:flex-none px-6 md:px-8 py-2.5 text-[9px] font-black tracking-[0.2em] rounded-full transition-all duration-300 whitespace-nowrap ${
+                  activeTab === tab 
+                    ? (isDark ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30 shadow-sm' : 'bg-blue-600/10 text-blue-600 border border-blue-500/20 shadow-sm') 
+                    : (isDark ? 'text-zinc-500 hover:text-zinc-300 border border-transparent' : 'text-zinc-400 hover:text-zinc-900 border border-transparent')
+                }`}
+              >
+                {t.tabs[tab]}
+              </button>
+            ))}
           </div>
         </div>
-      )}
-
-      {activeTab === 'diary' && (
-        <div className="bento-card overflow-hidden flex flex-col h-[600px]">
-          <div className={`p-4 border-b border-[var(--card-border)] flex-shrink-0 flex justify-between items-center ${theme === 'light' ? 'bg-zinc-50' : 'bg-zinc-900/50'}`}>
-            <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-500">{selectedEntry ? selectedEntry.date : t.diary.title}</h3>
-            {selectedEntry && (
-              <button 
-                onClick={() => setSelectedEntry(null)} 
-                className="text-[9px] font-black uppercase tracking-widest px-3 py-1 border border-[var(--card-border)] hover:bg-zinc-800 hover:text-white transition-all"
-              >
-                {t.diary.back}
-              </button>
-            )}
-          </div>
-
-          <div className="flex-grow overflow-y-auto custom-scrollbar">
-            {!selectedEntry ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[500px]">
-                  <thead>
-                    <tr className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-zinc-500 border-b border-[var(--card-border)] sticky top-0 bg-[var(--card-bg)]">
-                      <th className="py-4 px-6">DATE</th>
-                      <th className="py-4 px-6">TYPE</th>
-                      <th className="py-4 px-6">FILE_NAME</th>
-                      <th className="py-4 px-6 text-right">ACTION</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--card-border)]">
-                    {t.diary.entries.map((entry, i) => (
-                      <tr key={i} className="hover:bg-zinc-800/5 transition-colors group">
-                        <td className="py-4 px-6 text-[10px] mono text-zinc-500">{entry.date}</td>
-                        <td className="py-4 px-6">
-                          <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-sm ${entry.type === 'FIX' ? 'bg-blue-900/40 text-blue-400' : entry.type === 'CORE' ? 'bg-purple-900/40 text-purple-400' : entry.type === 'SECURITY' ? 'bg-red-900/40 text-red-400' : 'bg-green-900/40 text-green-400'}`}>
-                            {entry.type}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-[10px] font-bold opacity-80 mono">{entry.file}</td>
-                        <td className="py-4 px-6 text-right">
-                          <button 
-                            onClick={() => fetchDiaryFile(entry)}
-                            className="text-[9px] font-black uppercase tracking-[0.15em] px-4 py-2 bg-zinc-800 text-white hover:bg-[#007BFF] transition-all"
-                          >
-                            {t.diary.inspect}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="p-6 md:p-10 animate-in slide-in-from-right-4 duration-500">
-                {loadingFile ? (
-                  <div className="h-64 flex flex-col items-center justify-center mono text-[10px] opacity-30 animate-pulse">
-                    &gt; RETRIEVING_DATA_FROM_BRANCH_DEV_V4...
+      </div>
+      
+      <div className="px-2 md:px-0">
+         {activeTab === 'ethos' && (
+           <div className="space-y-8">
+             <div className="bento-card p-8 md:p-16 text-center border-b-4 border-b-blue-600">
+                <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-4">{t.ethos.title}</h2>
+                <p className="text-[10px] font-black text-blue-500 tracking-[0.3em] mb-10">{t.ethos.subtitle}</p>
+                <p className="text-sm md:text-xl opacity-60 leading-relaxed max-w-3xl mx-auto font-medium">{t.ethos.text}</p>
+             </div>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {t.ethos.pillars.map((p, i) => (
+                  <div key={i} className="bento-card p-8">
+                    <h4 className="text-[10px] font-black tracking-widest text-blue-500 mb-4">{p.t}</h4>
+                    <p className="text-sm font-bold opacity-70">{p.d}</p>
                   </div>
-                ) : (
-                  <div className="max-w-none">
-                    <div className={`p-6 border border-zinc-800 mb-8 bg-black/20 mono text-[11px] leading-relaxed whitespace-pre-wrap shadow-inner ${colorBlindMode ? 'border-white text-white' : 'text-blue-400'}`}>
-                      {fileContent}
+                ))}
+             </div>
+           </div>
+         )}
+
+         {activeTab === 'rules' && (
+           <div className="bento-card p-8 md:p-16">
+              <h2 className="text-3xl font-black tracking-tighter mb-10">{t.rules.title}</h2>
+              <div className="space-y-6">
+                {t.rules.items.map((r, i) => (
+                  <div key={i} className={`p-6 rounded-3xl border flex items-center gap-6 ${isDark ? 'bg-white/5 border-white/5' : 'bg-black/5 border-black/5'}`}>
+                    <span className="text-2xl font-black text-blue-500">0{i+1}</span>
+                    <p className="text-lg font-bold opacity-80">{r}</p>
+                  </div>
+                ))}
+              </div>
+           </div>
+         )}
+
+         {activeTab === 'glossary' && (
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {t.glossary.map((g, i) => (
+                <div key={i} className="bento-card p-8 group">
+                  <h4 className="text-xl font-black tracking-tighter mb-2 group-hover:text-blue-500 transition-colors">{g.term}</h4>
+                  <p className="text-sm opacity-60 leading-relaxed font-medium">{g.desc}</p>
+                </div>
+              ))}
+           </div>
+         )}
+
+         {activeTab === 'diary' && (
+           <div className="bento-card p-8 md:p-16">
+              <div className="space-y-12">
+                {t.diary.map((d, i) => (
+                  <div key={i} className="flex gap-8 relative">
+                    {i < t.diary.length - 1 && <div className="absolute left-4 top-10 bottom-[-40px] w-0.5 bg-blue-600/20"></div>}
+                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 z-10 shadow-lg shadow-blue-500/40">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black text-blue-500 tracking-widest mono">{d.date}</span>
+                      <p className="text-lg font-bold mt-2 opacity-80">{d.event}</p>
                     </div>
                   </div>
-                )}
+                ))}
               </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'intent' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bento-card p-6 md:p-10 flex flex-col justify-center bg-zinc-900/10">
-            <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-zinc-500 mb-8">{t.intent.title}</h3>
-            <div className="space-y-6">
-              {t.intent.body.map((text, i) => (
-                <p key={i} className="text-sm md:text-lg font-black tracking-tight leading-tight md:leading-snug">
-                  <span className="text-blue-500 mr-2">/</span> {text}
-                </p>
-              ))}
-            </div>
-          </div>
-          <div className="bento-card p-6 md:p-10 flex flex-col justify-between border-dashed opacity-50">
-             <div className="mono text-[10px] space-y-2">
-                <p>&gt; PROJECT: SENTINEL_V4</p>
-                <p>&gt; SCOPE: NATIONAL_AUDIT</p>
-                <p>&gt; AUTH: CITIZEN_LED</p>
-                <p>&gt; REPO_V: git:dev-v4</p>
-             </div>
-             <div className="mt-8">
-                <div className="h-24 w-24 border-4 border-zinc-800 flex items-center justify-center">
-                   <div className="text-[8px] font-black mono text-center p-2">SHA-256 SECURED ENVIRONMENT</div>
-                </div>
-             </div>
-          </div>
-        </div>
-      )}
+           </div>
+         )}
+      </div>
     </div>
   );
 };

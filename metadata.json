@@ -1,5 +1,26 @@
 {
-  "name": "Proyecto C.E.N.T.I.N.E.L.",
-  "description": "Centinela Electrónico Neutral Transparente Íntegro Nacional Electoral Libre. Una herramienta de auditoría electoral de alta fidelidad para Honduras con visualización de datos forenses.",
-  "requestFramePermissions": []
+  "name": "Centinel App",
+  "short_name": "CENTINEL",
+  "description": "App Pura de auditoría electoral forense. Cero recolección de datos. Privacidad radical garantizada.",
+  "version": "4.1.0",
+  "requestFramePermissions": [],
+  "nativeConfig": {
+    "backgroundColor": "#020617",
+    "orientation": "portrait",
+    "ios": {
+      "bundleId": "org.proyectocentinel.app",
+      "preferredStatusBarStyle": "light-content",
+      "privacyManifest": {
+        "NSPrivacyAccessedAPITypes": [],
+        "NSPrivacyTracking": false
+      }
+    },
+    "android": {
+      "packageName": "org.proyectocentinel.app",
+      "statusBarColor": "#020617",
+      "permissions": [
+        "android.permission.INTERNET"
+      ]
+    }
+  }
 }

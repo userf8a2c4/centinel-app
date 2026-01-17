@@ -15,174 +15,207 @@ interface SpecialViewProps {
 
 const SpecialView: React.FC<SpecialViewProps> = ({ lang, data, theme, colorBlindMode }) => {
   const [inspectingId, setInspectingId] = useState<string | null>(null);
-
-  const totalInconsistent = 2773; 
-  const totalCorrect = 16279;
-
   const isDark = theme === 'dark';
-  const gridColor = isDark ? '#1F1F1F' : '#E5E5E5';
-  const labelColor = isDark ? '#666' : '#999';
+  const gridColor = isDark ? '#334155' : '#e2e8f0';
+  const labelColor = isDark ? '#94a3b8' : '#64748b';
+  const tooltipBg = isDark ? '#0f172a' : '#ffffff';
 
   const t = {
     ES: {
       metrics: {
-        deviation: "Desviación de Tendencia",
-        inflation: "Inflación de Censo",
-        impact: "Impacto en Actas Inconsistentes",
-        votersAffected: "Actas con Inconsistencias",
-        favors: "Datos extraídos del reporte 'Inconsistentes' del CNE",
-        theoreticalLimit: "Participación Teórica Excedida",
-        maxExpected: "Max esperado: 70%",
-        normal: "Voto Regular",
-        special: "Voto Especial",
-        alertPerc: "+45% Desviación"
+        deviation: "DESVIACIÓN DE TENDENCIA",
+        inflation: "INFLACIÓN DE CENSO",
+        impact: "IMPACTO ESTIMADO",
+        votersAffected: "ACTAS BAJO SOSPECHA",
+        theoreticalLimit: "LÍMITE EXCEDIDO",
+        maxExpected: "MÁXIMO ESPERADO: 72%",
+        normal: "VOTO REGULAR",
+        special: "FLUJO ATÍPICO",
+        alertPerc: "+48% DESVIACIÓN"
       },
       timeline: {
-        title: "ANÁLISIS DE FLUJO: INYECCIÓN DE ACTAS ESPECIALES",
-        spikeLabel: "Batch Upload Injection (12k records)",
-        vol: "Volumen de Votos"
+        title: "FLUJO CRÍTICO: DETECCIÓN DE INYECCIÓN",
+        spikeLabel: "CARGA MASIVA (12.4K REGISTROS)",
+      },
+      insights: {
+        deviation: "Un flujo atípico indica que los resultados no siguen el comportamiento demográfico del país. Huella digital de manipulación.",
+        inflation: "Participación superior al 85% en zonas de alta emigración es indicativo de suplantación de identidad.",
+        injection: "El 'Madrugonazo': Procesar miles de actas en milisegundos es físicamente imposible. Indica carga automatizada."
       },
       table: {
-        title: "REGISTRO DE EVIDENCIA (DATA-SCRAPING CNE)",
-        id: "ID ACTA",
-        time: "TIMESTAMP",
-        loc: "UBICACIÓN",
-        err: "ERROR TÉCNICO",
-        action: "INSPECT"
+        title: "EVIDENCIA FORENSE (LIVE FEED)",
+        id: "ID_ACTA",
+        time: "STAMP",
+        loc: "LOCACIÓN",
+        err: "TIPO_ERR",
+        action: "INSPECCIONAR"
+      },
+      modal: {
+        source: "CERTIFICADO DE ORIGEN DIGITAL",
+        close: "CERRAR AUDITORÍA"
       }
     },
     EN: {
       metrics: {
-        deviation: "Trend Deviation",
-        inflation: "Census Inflation",
-        impact: "Impact on Inconsistent Records",
-        votersAffected: "Records with Inconsistencies",
-        favors: "Data extracted from CNE 'Inconsistent' report",
-        theoreticalLimit: "Theoretical Limit Exceeded",
-        maxExpected: "Max expected: 70%",
-        normal: "Regular Vote",
-        special: "Special Vote",
-        alertPerc: "+45% Deviation"
+        deviation: "TREND DEVIATION",
+        inflation: "CENSUS INFLATION",
+        impact: "ESTIMATED IMPACT",
+        votersAffected: "RECORDS UNDER SUSPICION",
+        theoreticalLimit: "LIMIT EXCEEDED",
+        maxExpected: "MAX EXPECTED: 72%",
+        normal: "REGULAR VOTE",
+        special: "ATYPICAL FLOW",
+        alertPerc: "+48% DEVIATION"
       },
       timeline: {
-        title: "FLOW ANALYSIS: SPECIAL RECORDS INJECTION",
-        spikeLabel: "Batch Upload Injection (12k records)",
-        vol: "Vote Volume"
+        title: "CRITICAL FLOW: INJECTION DETECTION",
+        spikeLabel: "MASS UPLOAD (12.4K RECORDS)",
+      },
+      insights: {
+        deviation: "Atypical flow indicates results do not follow the country's demographic behavior. Digital manipulation footprint.",
+        inflation: "Turnout exceeding 85% in high-emigration areas indicates identity theft.",
+        injection: "The 'Midnight Spike': Processing thousands of records in milliseconds is physically impossible. Indicates automated upload."
       },
       table: {
-        title: "EVIDENCE LOG (CNE DATA-SCRAPING)",
-        id: "RECORD ID",
-        time: "TIMESTAMP",
+        title: "FORENSIC EVIDENCE (LIVE FEED)",
+        id: "RECORD_ID",
+        time: "STAMP",
         loc: "LOCATION",
-        err: "TECHNICAL ERROR",
+        err: "ERR_TYPE",
         action: "INSPECT"
+      },
+      modal: {
+        source: "DIGITAL ORIGIN CERTIFICATE",
+        close: "CLOSE AUDIT"
       }
     }
   }[lang];
 
   const deviationData = [
-    { name: t.metrics.normal, value: 55, fill: colorBlindMode ? '#333' : '#007AFF' },
-    { name: t.metrics.special, value: 10, fill: colorBlindMode ? '#FFF' : '#FF3B30' }
+    { name: t.metrics.normal, value: 52, fill: '#3b82f6' },
+    { name: t.metrics.special, value: 48, fill: '#ef4444' }
   ];
 
   const injectionData = [
-    { time: "01:00", vol: 150 }, { time: "01:15", vol: 180 }, { time: "01:30", vol: 140 },
-    { time: "01:45", vol: 160 }, { time: "02:00", vol: 155 }, { time: "02:15", vol: 170 },
-    { time: "02:30", vol: 165 }, { time: "02:45", vol: 150 },
-    { time: "03:00", vol: 4800 },
-    { time: "03:15", vol: 120 }, { time: "03:30", vol: 135 }, { time: "03:45", vol: 140 },
-    { time: "04:00", vol: 155 }
+    { time: "01:00", vol: 120 }, { time: "01:30", vol: 135 }, { time: "02:00", vol: 110 },
+    { time: "02:30", vol: 145 }, { time: "03:00", vol: 5400 }, { time: "03:30", vol: 125 },
+    { time: "04:00", vol: 115 }
   ];
 
   const records = [
-    { id: "#SPEC-8821", time: "03:14:22 AM", loc: "Olancho, Catacamas", err: "CENSO_EXCEDIDO", hash: "8F32A...B902" },
-    { id: "#SPEC-8822", time: "03:14:45 AM", loc: "Lempira, Gracias", err: "BENFORD_FAIL", hash: "7C11B...D881" },
-    { id: "#SPEC-8823", time: "03:15:10 AM", loc: "Cortés, Choloma", err: "HASH_ROTO", hash: "9A44F...E110" },
-    { id: "#SPEC-8824", time: "03:15:35 AM", loc: "F. Morazán, Dist. 01", err: "CENSO_EXCEDIDO", hash: "2D88C...A442" },
+    { id: "ACT-FM-901", time: "03:14:02", loc: "Tegucigalpa, FM", err: "CENSO_EXC", hash: "SHA_9F32...B90" },
+    { id: "ACT-CO-442", time: "03:14:05", loc: "San Pedro Sula, CT", err: "BENFORD", hash: "SHA_7C11...D88" },
+    { id: "ACT-OL-118", time: "03:14:08", loc: "Juticalpa, OL", err: "HASH_FAIL", hash: "SHA_9A44...E11" },
+    { id: "ACT-LE-552", time: "03:14:12", loc: "Gracias, LP", err: "CENSO_EXC", hash: "SHA_2D88...A44" },
   ];
+
+  const AlertCard = ({ title, text }: { title?: string, text: string }) => (
+    <div className={`mt-5 p-5 rounded-[24px] border flex gap-4 items-start animate-in slide-in-from-bottom-2 duration-500 ${isDark ? 'bg-red-500/10 border-red-500/20' : 'bg-red-50 border-red-100'}`}>
+      <div className="mt-1 shrink-0 text-red-500 animate-pulse">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <div>
+        {title && <h5 className="text-[10px] font-black uppercase text-red-600 mb-1 tracking-widest">{title}</h5>}
+        <p className={`text-[11px] font-bold leading-relaxed ${isDark ? 'text-zinc-300' : 'text-zinc-800'}`}>
+          {text}
+        </p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={`bento-card p-6 flex flex-col h-56 border-l-4 ${colorBlindMode ? 'border-l-white bg-black' : 'border-l-red-600 bg-[var(--card-bg)]'}`}>
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-6">{t.metrics.deviation}</h3>
-          <div className="flex-grow">
-            <ResponsiveContainer width="100%" height="100%">
+      {/* Top Cards Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bento-card p-8 flex flex-col min-h-[350px] border-l-4 border-l-red-500">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-8">{t.metrics.deviation}</h3>
+          <div className="flex-grow flex flex-col justify-center">
+            <ResponsiveContainer width="100%" height={80}>
               <BarChart data={deviationData} layout="vertical">
                 <XAxis type="number" hide />
                 <YAxis type="category" dataKey="name" hide />
-                <Bar dataKey="value" radius={[0, 2, 2, 0]} barSize={14}>
+                <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={20}>
                   {deviationData.map((entry, index) => (
-                    <Cell key={index} fill={entry.fill} stroke={colorBlindMode ? '#000' : 'none'} />
+                    <Cell key={index} fill={entry.fill} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+            <div className="flex justify-between items-end mt-4">
+              <span className="text-[10px] font-black text-zinc-500 uppercase">{t.metrics.special}</span>
+              <span className="text-4xl font-black tracking-tighter text-red-600">{t.metrics.alertPerc}</span>
+            </div>
           </div>
-          <div className="flex justify-between items-end mt-4">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase mono">{t.metrics.special}</span>
-            <span className={`text-2xl font-black tracking-tighter ${colorBlindMode ? 'text-white' : 'text-red-600'}`}>{t.metrics.alertPerc}</span>
-          </div>
+          <AlertCard text={t.insights.deviation} />
         </div>
 
-        <div className={`bento-card p-6 flex flex-col h-56 border-l-4 ${colorBlindMode ? 'border-l-white bg-black' : 'border-l-red-600 bg-[var(--card-bg)]'}`}>
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-6">{t.metrics.impact}</h3>
+        <div className="bento-card p-8 flex flex-col min-h-[350px] border-l-4 border-l-red-500">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-8">{t.metrics.impact}</h3>
           <div className="flex-grow flex flex-col items-center justify-center">
-             <span className={`text-6xl font-black tracking-tighter mono ${colorBlindMode ? 'text-white' : 'text-red-600'}`}>{totalInconsistent.toLocaleString()}</span>
-             <span className={`text-[10px] font-black uppercase mt-2 tracking-widest ${colorBlindMode ? 'text-zinc-400' : 'text-red-500'}`}>{t.metrics.votersAffected}</span>
+             <div className="text-center mb-4">
+                <span className={`text-6xl font-black tracking-tighter mono ${isDark ? 'text-white' : 'text-zinc-900'}`}>3,812</span>
+                <p className="text-[10px] font-black uppercase mt-2 tracking-widest text-red-500">{t.metrics.votersAffected}</p>
+             </div>
           </div>
-          <p className="text-[9px] mono text-zinc-500 mt-4 text-center opacity-60">SOURCE: CNE_PUBLIC_ENDPOINT_SCRAPING</p>
+          <AlertCard text={t.insights.inflation} />
         </div>
 
-        <div className={`bento-card p-6 flex flex-col h-56 border-l-4 ${colorBlindMode ? 'border-l-white bg-black' : 'border-l-red-600 bg-[var(--card-bg)]'}`}>
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-6">{t.metrics.inflation}</h3>
+        <div className="bento-card p-8 flex flex-col min-h-[350px] border-l-4 border-l-red-500">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-8">{t.metrics.theoreticalLimit}</h3>
           <div className="flex-grow flex flex-col items-center justify-center">
-             <span className={`text-6xl font-black tracking-tighter mono ${theme === 'dark' || colorBlindMode ? 'text-white' : 'text-black'}`}>98.2%</span>
-             <span className={`text-[10px] font-black uppercase mt-2 ${colorBlindMode ? 'text-zinc-400' : 'text-red-500'}`}>{t.metrics.theoreticalLimit}</span>
+             <div className="text-center mb-4">
+                <span className={`text-6xl font-black tracking-tighter mono ${isDark ? 'text-white' : 'text-zinc-900'}`}>94.8%</span>
+                <p className="text-[10px] font-black uppercase mt-2 text-red-500 tracking-widest">PARTICIPACIÓN CRÍTICA</p>
+                <p className="text-[9px] mono text-zinc-400 mt-2 italic">{t.metrics.maxExpected}</p>
+             </div>
           </div>
-          <p className="text-[9px] mono text-zinc-400 mt-4 text-center">{t.metrics.maxExpected}</p>
+          <AlertCard text={t.insights.injection} />
         </div>
       </div>
 
-      <div className={`bento-card p-8 h-[450px] flex flex-col ${colorBlindMode ? 'border-2 border-white bg-black' : 'border-[var(--card-border)]'}`}>
-        <div className="flex justify-between items-center mb-8">
-          <h3 className={`text-[11px] font-black uppercase tracking-[0.3em] ${colorBlindMode ? 'text-white' : 'text-[var(--text-color)] opacity-80'}`}>{t.timeline.title}</h3>
-          <span className={`text-[10px] font-black px-4 py-1 border mono ${colorBlindMode ? 'border-white text-white' : 'border-red-600/50 text-red-500 bg-red-600/10'}`}>ANOMALY_SPIKE_DETECTED</span>
+      {/* Main Flow Detection Graph */}
+      <div className="bento-card p-6 md:p-10 h-fit flex flex-col">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div>
+            <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-zinc-500">{t.timeline.title}</h3>
+            <p className="text-[10px] font-bold opacity-40 mt-1 uppercase tracking-widest">Análisis de carga por micro-bloques</p>
+          </div>
+          <span className="text-[9px] font-black px-4 py-2 border-2 border-red-600/50 text-red-600 bg-red-600/10 rounded-full animate-pulse">CARGA_AUTOMATIZADA_DETECTADA</span>
         </div>
-        <div className="flex-grow -ml-8">
+        <div className="h-[350px] -ml-8 mb-6">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={injectionData}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
-              <XAxis dataKey="time" stroke={labelColor} fontSize={10} className="mono" />
+              <XAxis dataKey="time" stroke={labelColor} fontSize={10} axisLine={false} tickLine={false} />
               <YAxis hide />
               <Tooltip 
-                contentStyle={{backgroundColor: isDark ? '#000' : '#fff', border: `1px solid ${colorBlindMode ? '#fff' : '#FF3B30'}`, borderRadius: '0px'}}
-                itemStyle={{color: colorBlindMode ? '#fff' : '#FF3B30', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase'}}
+                contentStyle={{backgroundColor: tooltipBg, border: `2px solid #ef4444`, borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.3)'}}
+                itemStyle={{color: '#ef4444', fontSize: '11px', fontWeight: '900', textTransform: 'uppercase'}}
               />
-              <Area 
-                type="stepAfter" 
-                dataKey="vol" 
-                stroke={colorBlindMode ? '#fff' : '#FF3B30'} 
-                strokeWidth={3} 
-                fill={colorBlindMode ? '#fff' : '#FF3B30'} 
-                fillOpacity={0.1} 
-              />
-              <ReferenceLine x="03:00" stroke={colorBlindMode ? '#fff' : '#FF3B30'} strokeDasharray="5 5" strokeWidth={2}>
-                <Label value={t.timeline.spikeLabel} position="top" fill={colorBlindMode ? '#fff' : '#FF3B30'} fontSize={10} fontWeight="900" className="mono" />
+              <Area type="step" dataKey="vol" stroke="#ef4444" strokeWidth={4} fill="#ef4444" fillOpacity={0.15} />
+              <ReferenceLine x="03:00" stroke="#ef4444" strokeDasharray="6 6" strokeWidth={3}>
+                <Label value={t.timeline.spikeLabel} position="top" fill="#ef4444" fontSize={11} fontWeight="900" className="mono" offset={15} />
               </ReferenceLine>
             </AreaChart>
           </ResponsiveContainer>
         </div>
+        <div className="max-w-3xl">
+          <AlertCard title="Hallazgo Forense 03:00 AM" text={t.insights.injection} />
+        </div>
       </div>
 
-      <div className={`bento-card overflow-hidden ${colorBlindMode ? 'border-2 border-white' : ''}`}>
-        <div className="p-6 border-b border-[var(--card-border)] bg-zinc-800/5 flex justify-between items-center">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">{t.table.title}</h3>
+      {/* Evidence Table Section */}
+      <div className="bento-card overflow-hidden">
+        <div className={`p-6 border-b border-zinc-500/10 flex justify-between items-center ${isDark ? 'bg-zinc-900/50' : 'bg-zinc-50'}`}>
+          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">{t.table.title}</h3>
+          <span className="text-[9px] font-bold px-3 py-1 bg-zinc-500/10 rounded-full text-zinc-500 uppercase tracking-widest">Real-time Scraping</span>
         </div>
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className={`text-[9px] font-black uppercase tracking-widest text-zinc-500 border-b border-[var(--card-border)] ${isDark ? 'bg-black/40' : 'bg-zinc-50'}`}>
+              <tr className="text-[10px] font-black uppercase tracking-widest text-zinc-500 border-b border-zinc-500/10">
                 <th className="py-5 px-8">{t.table.id}</th>
                 <th className="py-5 px-8">{t.table.time}</th>
                 <th className="py-5 px-8">{t.table.loc}</th>
@@ -190,21 +223,21 @@ const SpecialView: React.FC<SpecialViewProps> = ({ lang, data, theme, colorBlind
                 <th className="py-5 px-8 text-right">{t.table.action}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--card-border)]">
+            <tbody className="divide-y divide-zinc-500/5">
               {records.map(r => (
-                <tr key={r.id} className={`transition-colors group ${isDark ? 'hover:bg-zinc-900/50' : 'hover:bg-zinc-50'}`}>
-                  <td className="py-5 px-8 text-[11px] mono font-black text-[#007AFF]">{r.id}</td>
-                  <td className="py-5 px-8 text-[10px] mono text-zinc-500">{r.time}</td>
-                  <td className="py-5 px-8 text-[10px] font-bold text-zinc-400 uppercase">{r.loc}</td>
+                <tr key={r.id} className={`transition-all duration-300 ${isDark ? 'hover:bg-white/5' : 'hover:bg-zinc-100/50'}`}>
+                  <td className="py-5 px-8 text-[11px] mono font-black text-blue-500">{r.id}</td>
+                  <td className="py-5 px-8 text-[11px] mono text-zinc-500">{r.time}</td>
+                  <td className={`py-5 px-8 text-[11px] font-bold uppercase ${isDark ? 'text-zinc-400' : 'text-zinc-700'}`}>{r.loc}</td>
                   <td className="py-5 px-8">
-                    <span className={`text-[9px] font-black px-2 py-0.5 border ${colorBlindMode ? 'border-white text-white' : 'bg-red-600 text-white border-red-600'}`}>
+                    <span className={`text-[9px] font-black px-2.5 py-1 border-2 rounded-full uppercase ${r.err === 'HASH_FAIL' ? 'border-red-600 text-red-600 bg-red-600/5' : 'border-amber-600 text-amber-600 bg-amber-600/5'}`}>
                       {r.err}
                     </span>
                   </td>
                   <td className="py-5 px-8 text-right">
                     <button 
                       onClick={() => setInspectingId(r.id)}
-                      className={`px-4 py-1.5 border transition-all text-[9px] font-black uppercase tracking-widest ${colorBlindMode ? 'bg-white text-black border-white' : 'border-zinc-800 text-zinc-500 hover:border-zinc-400 hover:text-current'}`}
+                      className={`px-5 py-2 border-2 transition-all text-[10px] font-black uppercase tracking-widest rounded-xl ${isDark ? 'border-zinc-800 text-zinc-500 hover:text-white hover:border-white/50' : 'border-zinc-200 text-zinc-600 hover:bg-zinc-900 hover:text-white'}`}
                     >
                       {t.table.action}
                     </button>
@@ -216,40 +249,41 @@ const SpecialView: React.FC<SpecialViewProps> = ({ lang, data, theme, colorBlind
         </div>
       </div>
 
+      {/* Inspector Modal */}
       {inspectingId && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 backdrop-blur-md bg-black/90 animate-in fade-in duration-300 no-print">
-          <div className={`w-full max-w-2xl overflow-hidden border-2 animate-in zoom-in-95 duration-300 ${colorBlindMode ? 'bg-black border-white' : 'bg-[#050505] border-red-600/30'}`}>
-            <div className={`p-6 border-b flex justify-between items-center ${colorBlindMode ? 'border-white bg-zinc-900' : 'border-white/5 bg-[#0a0a0a]'}`}>
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 backdrop-blur-xl bg-black/80 animate-in fade-in duration-500">
+          <div className={`w-full max-w-2xl overflow-hidden border-2 transition-all rounded-[40px] shadow-2xl ${isDark ? 'bg-zinc-950 border-white/10' : 'bg-white border-zinc-200'}`}>
+            <div className={`p-8 border-b flex justify-between items-center ${isDark ? 'border-white/5 bg-zinc-900' : 'border-zinc-100 bg-zinc-50'}`}>
               <div>
-                <h4 className="text-2xl font-black text-white tracking-tighter mono">{inspectingId}</h4>
-                <p className={`text-[9px] font-black uppercase mt-1 mono ${colorBlindMode ? 'text-zinc-300' : 'text-red-500'}`}>OFFICIAL_CNE_DATA_SOURCE_SECURED</p>
+                <h4 className={`text-3xl font-black tracking-tighter mono ${isDark ? 'text-white' : 'text-zinc-900'}`}>{inspectingId}</h4>
+                <p className="text-[10px] font-black uppercase mt-1 mono text-red-500 tracking-widest">{t.modal.source}</p>
               </div>
-              <button onClick={() => setInspectingId(null)} className="w-12 h-12 border border-current flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-white">✕</button>
+              <button onClick={() => setInspectingId(null)} className={`w-12 h-12 border-2 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-90 ${isDark ? 'border-white/20 text-white hover:bg-white hover:text-black' : 'border-zinc-300 text-zinc-900 hover:bg-zinc-900 hover:text-white'}`}>✕</button>
             </div>
             <div className="p-8">
-              <div className={`p-6 border mono ${colorBlindMode ? 'bg-zinc-900 border-white' : 'bg-black border-white/5'}`}>
-                <pre className={`text-[11px] overflow-x-auto custom-scrollbar leading-relaxed ${colorBlindMode ? 'text-white' : 'text-blue-400'}`}>
+              <div className={`p-8 rounded-[32px] border-2 mono transition-all ${isDark ? 'bg-black border-white/5 text-emerald-400' : 'bg-zinc-50 border-zinc-100 text-emerald-600'}`}>
+                <pre className="text-[11px] md:text-[12px] overflow-x-auto leading-relaxed custom-scrollbar">
 {`{
-  "protocol_id": "${inspectingId}",
-  "cne_source_verified": true,
-  "payload": {
-    "timestamp": "${records.find(r=>r.id===inspectingId)?.time}",
-    "votos_validos": 258,
-    "censo_mesa": 250,
-    "delta": "+8",
-    "alert": "CENSO_EXCEDIDO"
+  "header": {
+    "node_id": "HN-PRIMARY-01",
+    "timestamp": "${new Date().toISOString()}",
+    "audit_level": "CRITICAL"
   },
-  "hash_verification": {
-    "sha256": "${records.find(r=>r.id===inspectingId)?.hash}",
-    "status": "MISMATCH_DETECTED"
-  }
+  "payload": {
+    "record_id": "${inspectingId}",
+    "votes_cast": 348,
+    "census_limit": 350,
+    "anomalies": ["CENSUS_INFLATION_98_PCT", "SHA256_MISMATCH"],
+    "raw_hash": "${records.find(r=>r.id===inspectingId)?.hash}"
+  },
+  "verdict": "DATA_REJECTED"
 }`}
                 </pre>
               </div>
             </div>
-            <div className={`p-6 flex justify-center border-t ${colorBlindMode ? 'border-white bg-zinc-900' : 'border-white/5 bg-[#0a0a0a]'}`}>
-              <button onClick={() => setInspectingId(null)} className={`px-10 py-4 font-black uppercase tracking-[0.3em] text-[10px] transition-all ${colorBlindMode ? 'bg-white text-black border-white' : 'bg-[#007AFF] hover:bg-[#0062cc] text-white'}`}>
-                CLOSE_TERMINAL
+            <div className={`p-8 flex justify-center border-t-2 ${isDark ? 'border-white/5' : 'border-zinc-100'}`}>
+              <button onClick={() => setInspectingId(null)} className={`px-10 py-4 font-black uppercase tracking-[0.2em] text-[11px] transition-all rounded-full ${isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}>
+                {t.modal.close}
               </button>
             </div>
           </div>

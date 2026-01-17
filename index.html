@@ -3,95 +3,120 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINEL | Auditoría Electoral Forense</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow">
+    <title>CENTINEL | Auditoría Forense</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #020617; /* slate-950 */
-            --bg-secondary: #0f172a; /* slate-900 */
-            --text-primary: #f8fafc; /* slate-50 */
-            --text-secondary: #94a3b8; /* slate-400 */
-            --card-bg: #1e293b; /* slate-800 */
-            --card-border: #334155; /* slate-700 */
-            --accent-blue: #3b82f6; /* blue-600 */
-            --accent-red: #dc2626; /* red-600 */
-            --accent-green: #059669; /* emerald-600 */
-            --accent-amber: #d97706; /* amber-600 */
+            --bg-color: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --accent-blue: #0071e3;
+            --bento-radius: 32px;
+            --nm-shadow: 12px 12px 24px #d1d1d6, -12px -12px 24px #ffffff;
+            --nm-inset: inset 2px 2px 5px #d1d1d6, inset -2px -2px 5px #ffffff;
+            --ease-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
         }
 
-        .light-theme {
-            --bg-color: #f8fafc;
-            --bg-secondary: #f1f5f9;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --card-bg: #ffffff;
-            --card-border: #e2e8f0;
-            --accent-blue: #2563eb;
+        .dark-theme {
+            --bg-color: #000000;
+            --bg-secondary: #161617;
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --card-bg: rgba(28, 28, 30, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --nm-shadow: 12px 12px 24px #000000, -12px -12px 24px #1a1a1c;
+            --nm-inset: inset 4px 4px 8px #000000, inset -4px -4px 8px #1a1a1c;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            overscroll-behavior: none;
             -webkit-font-smoothing: antialiased;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.6s var(--ease-apple);
         }
-
-        .mono { font-family: 'JetBrains Mono', monospace; }
 
         .bento-card {
             background: var(--card-bg);
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
             border: 1px solid var(--card-border);
-            border-radius: 1rem; /* rounded-2xl */
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: var(--bento-radius);
+            transition: all 0.4s var(--ease-apple);
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.02);
         }
-
+        
         .bento-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border-color: rgba(0, 113, 227, 0.3);
         }
 
-        .glass {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--card-border);
+        .dark-theme .bento-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border-color: rgba(0, 113, 227, 0.5);
         }
 
-        .light-theme .glass {
-            background: rgba(248, 250, 252, 0.8);
+        .glass-nav {
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid var(--card-border);
         }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 10px; }
+        .ease-apple { transition-timing-function: var(--ease-apple); }
 
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 0px; height: 0px; }
+        
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .nm-inset {
+            box-shadow: var(--nm-inset) !important;
+        }
+        
+        .nm-flat {
+            box-shadow: var(--nm-shadow);
         }
 
-        .color-blind-active .bento-card {
-            border: 3px solid var(--text-primary) !important;
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px);
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 28px; width: 28px;
+            border-radius: 50%; background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            margin-top: -12px; border: 0.5px solid rgba(0,0,0,0.08);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 4px; background: rgba(0, 0, 0, 0.05); border-radius: 2px;
+        }
+        .dark-theme input[type=range]::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.1);
         }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "recharts": "https://esm.sh/recharts@^3.6.0"
+    "recharts": "https://esm.sh/recharts@^3.6.0",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
 </head>
-<body>
+<body class="custom-scrollbar">
     <div id="root"></div>
 </body>
 </html>

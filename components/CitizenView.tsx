@@ -12,200 +12,105 @@ interface CitizenViewProps {
 }
 
 const HONDURAS_PATHS = [
-  { id: "atlantida", name: "Atlántida", d: "M368,131 L411,146 L435,148 L460,165 L448,187 L401,176 L361,164 Z" },
-  { id: "choluteca", name: "Choluteca", d: "M379,355 L411,351 L433,374 L422,410 L391,418 L368,397 L366,375 Z" },
-  { id: "colon", name: "Colón", d: "M435,148 L538,162 L583,212 L561,248 L463,241 L451,213 L458,165 Z" },
-  { id: "comayagua", name: "Comayagua", d: "M267,238 L321,226 L342,289 L273,311 L252,284 Z" },
-  { id: "copan", name: "Copán", d: "M103,205 L156,211 L168,264 L131,288 L98,272 L92,231 Z" },
-  { id: "cortes", name: "Cortés", d: "M221,141 L303,136 L311,171 L282,216 L226,204 L212,168 Z" },
-  { id: "el_paraiso", name: "El Paraíso", d: "M416,293 L511,316 L498,364 L443,356 L411,351 L398,321 Z" },
-  { id: "francisco_morazan", name: "Francisco Morazán", d: "M321,226 L403,284 L411,351 L379,355 L328,349 L314,286 Z" },
-  { id: "gracias_a_dios", name: "Gracias a Dios", d: "M538,162 L742,198 L681,352 L561,316 L583,212 Z" },
-  { id: "intibuca", name: "Intibucá", d: "M176,268 L241,259 L251,311 L198,324 L181,296 Z" },
-  { id: "islas_bahia", name: "Islas de la Bahía", d: "M421,72 L458,78 L462,86 L425,81 Z M510,88 L542,101 L548,112 L515,103 Z" },
-  { id: "la_paz", name: "La Paz", d: "M241,259 L283,251 L294,306 L248,319 L241,281 Z" },
-  { id: "lempira", name: "Lempira", d: "M156,211 L212,204 L221,294 L171,306 L168,264 Z" },
-  { id: "ocotepeque", name: "Ocotepeque", d: "M72,271 L108,268 L114,316 L78,322 L72,291 Z" },
-  { id: "olancho", name: "Olancho", d: "M403,224 L521,232 L561,316 L416,293 L321,226 Z" },
-  { id: "santa_barbara", name: "Santa Bárbara", d: "M166,161 L221,154 L241,259 L176,268 L166,211 Z" },
-  { id: "valle", name: "Valle", d: "M294,306 L328,349 L379,355 L366,375 L301,388 L282,371 Z" },
-  { id: "yoro", name: "Yoro", d: "M303,136 L368,131 L451,213 L403,224 L321,226 L311,171 Z" }
+  { id: "atlantida", name: "Atlántida", d: "M435,145 L490,165 L510,185 L500,210 L440,200 L410,175 Z" },
+  { id: "choluteca", name: "Choluteca", d: "M420,440 L455,435 L485,470 L470,520 L425,530 L395,510 L390,480 Z" },
+  { id: "colon", name: "Colón", d: "M510,185 L650,205 L720,270 L680,320 L550,310 L530,280 L540,210 Z" },
+  { id: "comayagua", name: "Comayagua", d: "M320,300 L380,280 L400,360 L320,390 L290,350 Z" },
+  { id: "copan", name: "Copán", d: "M130,250 L185,260 L195,330 L150,360 L110,340 L115,280 Z" },
+  { id: "cortes", name: "Cortés", d: "M265,170 L360,165 L370,210 L340,270 L260,250 L245,210 Z" },
+  { id: "el_paraiso", name: "El Paraíso", d: "M485,370 L600,400 L580,470 L520,460 L455,435 L435,390 Z" },
+  { id: "francisco_morazan", name: "Francisco Morazán", d: "M380,280 L485,370 L455,435 L420,440 L370,440 L360,360 Z" },
+  { id: "gracias_a_dios", name: "Gracias a Dios", d: "M650,205 L920,250 L840,450 L680,400 L720,270 Z" },
+  { id: "intibuca", name: "Intibucá", d: "M215,335 L300,320 L310,390 L240,410 L220,370 Z" },
+  { id: "islas_bahia", name: "Islas de la Bahía", d: "M480,70 L540,85 L545,100 L485,90 Z M620,105 L680,130 L690,150 L630,130 Z" },
+  { id: "la_paz", name: "La Paz", d: "M300,320 L320,310 L340,380 L290,400 L280,350 Z" },
+  { id: "lempira", name: "Lempira", d: "M185,260 L260,250 L275,370 L205,385 L195,330 Z" },
+  { id: "ocotepeque", name: "Ocotepeque", d: "M90,335 L135,330 L145,395 L100,405 L90,365 Z" },
+  { id: "olancho", name: "Olancho", d: "M480,280 L650,290 L680,400 L520,380 L380,280 Z" },
+  { id: "santa_barbara", name: "Santa Bárbara", d: "M200,195 L265,185 L320,300 L215,335 L200,260 Z" },
+  { id: "valle", name: "Valle", d: "M340,380 L370,440 L420,440 L390,480 L320,490 L295,470 Z" },
+  { id: "yoro", name: "Yoro", d: "M360,165 L435,145 L530,280 L480,280 L380,280 L370,210 Z" }
 ];
 
 const CitizenView: React.FC<CitizenViewProps> = ({ lang, data, selectedDept, setSelectedDept, theme, colorBlindMode }) => {
-  const currentDept = useMemo(() => 
-    data?.departments.find(d => d.name === selectedDept) || null
-  , [data, selectedDept]);
-
-  const totalVotes = useMemo(() => 
-    data?.candidates.reduce((sum, c) => sum + c.votes, 0) || 1
-  , [data]);
+  const currentDept = useMemo(() => data?.departments.find(d => d.name === selectedDept) || null, [data, selectedDept]);
+  const totalVotes = useMemo(() => data?.candidates.reduce((sum, c) => sum + c.votes, 0) || 1, [data]);
+  const isDark = theme === 'dark';
 
   const t = {
-    ES: {
-      mapTitle: "Mapa Territorial",
-      statsTitle: "Métricas // " + selectedDept.toUpperCase(),
-      national: "Vista Nacional",
-      processed: "Actas Procesadas",
-      participation: "Participación Ciudadana",
-      status: "Estado de Integridad",
-      critical: "ALERTA DETECTADA",
-      clean: "VERIFICADO"
-    },
-    EN: {
-      mapTitle: "Territorial Map",
-      statsTitle: "Metrics // " + selectedDept.toUpperCase(),
-      national: "National View",
-      processed: "Processed Records",
-      participation: "Citizen Participation",
-      status: "Integrity Status",
-      critical: "ALERT DETECTED",
-      clean: "VERIFIED"
-    }
+    ES: { national: "NACIONAL", processed: "ACTAS", participation: "VOTACIÓN", votes: "VOTOS" },
+    EN: { national: "NATIONAL", processed: "RECORDS", participation: "TURNOUT", votes: "VOTES" }
   }[lang];
 
   return (
-    <div className="space-y-10">
-      {/* CANDIDATOS - GRID MODERNIZADO */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {data?.candidates.map((c) => (
-          <div key={c.id} className="bento-card p-6 flex flex-col justify-between overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-4 opacity-5">
-              <span className="font-black text-6xl mono">{c.id.toUpperCase().slice(0,2)}</span>
-            </div>
-            <div className="mb-6">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 block">{c.party}</span>
-              <h4 className="text-sm font-extrabold uppercase tracking-tight text-slate-100 mb-1">{c.name}</h4>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black tracking-tighter mono">{c.votes.toLocaleString()}</span>
-                <span className="text-[10px] font-bold text-slate-500 uppercase">votos</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-[10px] font-bold uppercase text-slate-500">
-                <span>Porcentaje</span>
-                <span>{(c.votes / totalVotes * 100).toFixed(1)}%</span>
-              </div>
-              <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                <div 
-                  className="h-full transition-all duration-1000 ease-out rounded-full" 
-                  style={{ 
-                    width: `${(c.votes / totalVotes * 100).toFixed(1)}%`, 
-                    backgroundColor: colorBlindMode ? '#fff' : c.color,
-                    boxShadow: colorBlindMode ? 'none' : `0 0 10px ${c.color}44`
-                  }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* MAPA GEOGRÁFICO */}
-        <div className="lg:col-span-8 bento-card p-6 flex flex-col min-h-[500px]">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
-              <h3 className="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">{t.mapTitle}</h3>
-            </div>
-            <button 
-              onClick={() => setSelectedDept("Nivel Nacional")} 
-              className="text-xs font-bold px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500 hover:text-white transition-all shadow-lg"
-            >
-              {t.national}
-            </button>
-          </div>
-
-          <div className="flex-grow relative flex items-center justify-center bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800">
-            <svg viewBox="0 0 800 500" className="w-full h-full max-h-[450px] object-contain">
-              {HONDURAS_PATHS.map((path) => {
-                const dData = data?.departments.find(d => d.name === path.name);
-                const isActive = selectedDept === path.name;
-                
-                let fill = theme === 'dark' ? '#0f172a' : '#f1f5f9';
-                if (isActive) fill = colorBlindMode ? '#FFF' : '#3b82f6';
-                else if (dData?.status === 'critical') fill = colorBlindMode ? '#888' : '#450a0a';
-
-                return (
-                  <path
-                    key={path.id}
-                    d={path.d}
-                    onClick={() => setSelectedDept(path.name)}
-                    className="cursor-pointer transition-all duration-300 hover:opacity-80 stroke-[0.8] touch-manipulation"
-                    style={{ 
-                      fill: fill, 
-                      stroke: isActive ? (theme === 'dark' ? '#FFF' : '#000') : (theme === 'dark' ? '#1e293b' : '#cbd5e1'),
-                      strokeWidth: isActive ? 2.5 : 1,
-                      filter: isActive ? 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))' : 'none'
-                    }}
-                  />
-                );
-              })}
-            </svg>
-            
-            <div className="absolute bottom-6 right-6 mono text-[10px] font-bold text-slate-600 flex flex-col items-center">
-              <span className="mb-2">NORTH</span>
-              <div className="w-px h-10 bg-slate-800"></div>
-              <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse mt-2"></div>
-            </div>
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-6 gap-8 pb-12">
+      <div className="md:col-span-4 bento-card p-10 flex flex-col min-h-[500px]">
+        <div className="flex justify-between items-start mb-12">
+          <h2 className="text-3xl font-black uppercase tracking-tighter">{selectedDept.toUpperCase()}</h2>
+          <button onClick={() => setSelectedDept("Nivel Nacional")} className={`px-6 py-2 rounded-xl text-[9px] font-black border transition-all ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-black/5 border-black/5 hover:bg-black/10'}`}>
+            {t.national}
+          </button>
         </div>
 
-        {/* MÉTRICAS DEPARTAMENTALES */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bento-card p-8">
-             <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-500 mb-10">{t.statsTitle}</h4>
-             
-             <div className="space-y-10">
-                <div className="relative">
-                  <span className="text-[10px] font-bold uppercase block mb-2 text-slate-500 tracking-widest mono">{t.processed}</span>
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-6xl font-black tracking-tighter text-slate-100 mono">
-                      {currentDept ? currentDept.processed : data?.global.processedPercent}%
-                    </span>
-                    <div className={`w-3 h-3 rounded-full ${currentDept?.status === 'critical' ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`}></div>
-                  </div>
-                </div>
+        <div className="flex-grow flex items-center justify-center">
+          <svg viewBox="0 0 1000 600" className="w-full h-full max-h-[400px]">
+            {HONDURAS_PATHS.map((path) => {
+              const dData = data?.departments.find(d => d.name === path.name);
+              const isActive = selectedDept === path.name;
+              const hasData = dData && dData.processed > 0;
+              
+              let fill = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
+              if (isActive) fill = '#0071e3';
+              else if (dData?.status === 'critical') fill = '#ef4444';
+              else if (hasData) fill = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 
-                <div className="relative">
-                  <span className="text-[10px] font-bold uppercase block mb-2 text-slate-500 tracking-widest mono">{t.participation}</span>
-                  <span className="text-4xl font-black tracking-tighter text-slate-100 mono">
-                    {currentDept ? currentDept.participation : data?.global.participationPercent}%
-                  </span>
-                </div>
+              return (
+                <path
+                  key={path.id} d={path.d} onClick={() => setSelectedDept(path.name)}
+                  className="cursor-pointer transition-all duration-300 hover:opacity-80"
+                  style={{ fill, stroke: isActive ? '#0071e3' : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'), strokeWidth: isActive ? 3 : 1 }}
+                />
+              );
+            })}
+          </svg>
+        </div>
+      </div>
 
-                <div className={`p-6 rounded-2xl border-2 transition-all ${currentDept?.status === 'critical' ? 'bg-red-950/20 border-red-600/30' : 'bg-slate-900/50 border-slate-700'}`}>
-                  <span className="text-[10px] font-bold uppercase block mb-3 text-slate-500 tracking-widest mono">{t.status}</span>
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${currentDept?.status === 'critical' ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white'}`}>
-                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          {currentDept?.status === 'critical' ? 
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /> :
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                          }
-                       </svg>
-                    </div>
-                    <span className={`text-sm font-black uppercase tracking-tight ${currentDept?.status === 'critical' ? 'text-red-500' : 'text-emerald-500'}`}>
-                      {currentDept?.status === 'critical' ? t.critical : t.clean}
-                    </span>
-                  </div>
-                </div>
-             </div>
+      <div className="md:col-span-2 space-y-6">
+        <div className="bento-card p-8 text-center">
+          <p className="text-[9px] font-black opacity-40 uppercase mb-2">{t.processed}</p>
+          <div className="flex justify-center items-baseline gap-2">
+            <span className="text-6xl font-black mono tracking-tighter">{currentDept ? currentDept.processed : data?.global.processedPercent}%</span>
           </div>
-
-          <div className="bento-card p-6 bg-slate-900/20 border-dashed">
-             <div className="flex items-center gap-3 mb-4">
-                <div className="w-2 h-2 rounded-full bg-blue-600"></div>
-                <h4 className="text-[10px] font-black uppercase text-slate-500 mono tracking-widest">Metadata Secure Link</h4>
-             </div>
-             <div className="mono text-[10px] text-slate-500 space-y-1">
-               <p>&gt; DEPT_URI: {selectedDept.toUpperCase().replace(' ', '_')}</p>
-               <p>&gt; TRACE_HASH: {Math.random().toString(16).slice(2, 10).toUpperCase()}</p>
-             </div>
+        </div>
+        <div className="bento-card p-8 text-center">
+          <p className="text-[9px] font-black opacity-40 uppercase mb-2">{t.participation}</p>
+          <div className="flex justify-center items-baseline gap-2">
+            <span className="text-6xl font-black mono tracking-tighter">{currentDept ? currentDept.participation : data?.global.participationPercent}%</span>
           </div>
         </div>
       </div>
+
+      {data?.candidates.map(c => (
+        <div key={c.id} className="md:col-span-2 bento-card p-8 flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-start mb-4">
+              <span className="text-[9px] font-black opacity-40 uppercase">{c.party}</span>
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: c.color }}></div>
+            </div>
+            <h4 className="text-lg font-black tracking-tight">{c.name}</h4>
+          </div>
+          <div className="mt-8">
+            <div className="flex justify-between items-baseline mb-3">
+              <span className="text-4xl font-black mono">{(c.votes / totalVotes * 100).toFixed(1)}%</span>
+              <span className="text-[9px] font-bold opacity-30">{c.votes.toLocaleString()} {t.votes}</span>
+            </div>
+            <div className="h-1.5 w-full bg-zinc-500/10 rounded-full overflow-hidden">
+              <div className="h-full transition-all duration-1000" style={{ width: `${(c.votes / totalVotes * 100)}%`, backgroundColor: c.color }}></div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
