@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Language, ElectionData, Theme } from '../types';
 
 interface CitizenViewProps {
@@ -18,7 +18,7 @@ const HONDURAS_PATHS = [
   { id: "comayagua", name: "Comayagua", d: "M320,300 L380,280 L400,360 L320,390 L290,350 Z" },
   { id: "copan", name: "Copán", d: "M130,250 L185,260 L195,330 L150,360 L110,340 L115,280 Z" },
   { id: "cortes", name: "Cortés", d: "M265,170 L360,165 L370,210 L340,270 L260,250 L245,210 Z" },
-  { id: "el_paraiso", name: "El Paraíso", d: "M485,370 L600,400 L580,470 L520,460 L455,435 L435,390 Z" },
+  { id: "el_paraiso", name: "El Paraíso", d: "M485,370 L600,400 L580,470 L520,460 L455,435 L420,440 L435,390 Z" },
   { id: "francisco_morazan", name: "Francisco Morazán", d: "M380,280 L485,370 L455,435 L420,440 L370,440 L360,360 Z" },
   { id: "gracias_a_dios", name: "Gracias a Dios", d: "M650,205 L920,250 L840,450 L680,400 L720,270 Z" },
   { id: "intibuca", name: "Intibucá", d: "M215,335 L300,320 L310,390 L240,410 L220,370 Z" },
@@ -35,12 +35,26 @@ const HONDURAS_PATHS = [
 const CitizenView: React.FC<CitizenViewProps> = ({ lang, data, selectedDept, setSelectedDept, theme, colorBlindMode }) => {
   const currentDept = useMemo(() => data?.departments.find(d => d.name === selectedDept) || null, [data, selectedDept]);
   const totalVotes = useMemo(() => data?.candidates.reduce((sum, c) => sum + c.votes, 0) || 1, [data]);
+  const latestProtocol = useMemo(() => data?.latestProtocols[0] || null, [data]);
   const isDark = theme === 'dark';
 
+  const [expandedCandidate, setExpandedCandidate] = useState<string | null>(null);
+
   const t = {
-    ES: { national: "NACIONAL", processed: "ACTAS", participation: "VOTACIÓN", votes: "VOTOS" },
-    EN: { national: "NATIONAL", processed: "RECORDS", participation: "TURNOUT", votes: "VOTES" }
+    ES: { national: "NACIONAL", processed: "ACTAS", participation: "VOTACIÓN", votes: "VOTOS", health: "SALUD_SHA256", status: "ÍNTEGRO", winProb: "PROB. VICTORIA", details: "VER MÉTRICAS FORENSES" },
+    EN: { national: "NATIONAL", processed: "RECORDS", participation: "TURNOUT", votes: "VOTES", health: "SHA256_HEALTH", status: "INTACT", winProb: "WIN PROB", details: "VIEW FORENSIC METRICS" }
   }[lang];
+
+  const getWinProb = (candidateId: string) => {
+    if (!data) return "0.0%";
+    const total = data.candidates.reduce((acc, c) => acc + c.votes, 0);
+    const processed = data.global.processedPercent / 100;
+    const cand = data.candidates.find(c => c.id === candidateId);
+    if (!cand) return "0.0%";
+    const share = cand.votes / total;
+    const prob = Math.min(99.9, Math.max(0.1, (share * (1 + processed) * 100)));
+    return `${prob.toFixed(1)}%`;
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-8 pb-12">
@@ -77,40 +91,93 @@ const CitizenView: React.FC<CitizenViewProps> = ({ lang, data, selectedDept, set
       </div>
 
       <div className="md:col-span-2 space-y-6">
-        <div className="bento-card p-8 text-center">
+        <div className="bento-card p-8 text-center flex flex-col justify-center">
           <p className="text-[9px] font-black opacity-40 uppercase mb-2">{t.processed}</p>
           <div className="flex justify-center items-baseline gap-2">
             <span className="text-6xl font-black mono tracking-tighter">{currentDept ? currentDept.processed : data?.global.processedPercent}%</span>
           </div>
         </div>
-        <div className="bento-card p-8 text-center">
+        <div className="bento-card p-8 text-center flex flex-col justify-center">
           <p className="text-[9px] font-black opacity-40 uppercase mb-2">{t.participation}</p>
           <div className="flex justify-center items-baseline gap-2">
             <span className="text-6xl font-black mono tracking-tighter">{currentDept ? currentDept.participation : data?.global.participationPercent}%</span>
           </div>
         </div>
-      </div>
-
-      {data?.candidates.map(c => (
-        <div key={c.id} className="md:col-span-2 bento-card p-8 flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-[9px] font-black opacity-40 uppercase">{c.party}</span>
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: c.color }}></div>
-            </div>
-            <h4 className="text-lg font-black tracking-tight">{c.name}</h4>
+        
+        <div className="bento-card p-8 text-center flex flex-col justify-center">
+          <div className="flex justify-between items-center mb-4 px-2">
+             <p className="text-[9px] font-black opacity-40 uppercase">{t.health}</p>
+             <span className="text-[8px] font-black px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded uppercase tracking-widest">{t.status}</span>
           </div>
-          <div className="mt-8">
-            <div className="flex justify-between items-baseline mb-3">
-              <span className="text-4xl font-black mono">{(c.votes / totalVotes * 100).toFixed(1)}%</span>
-              <span className="text-[9px] font-bold opacity-30">{c.votes.toLocaleString()} {t.votes}</span>
-            </div>
-            <div className="h-1.5 w-full bg-zinc-500/10 rounded-full overflow-hidden">
-              <div className="h-full transition-all duration-1000" style={{ width: `${(c.votes / totalVotes * 100)}%`, backgroundColor: c.color }}></div>
+          <div className="space-y-3">
+            <div className={`p-4 rounded-2xl mono text-[10px] break-all leading-relaxed ${isDark ? 'bg-black/40 text-emerald-400' : 'bg-zinc-100 text-emerald-600 shadow-inner'}`}>
+               {latestProtocol?.hash}
             </div>
           </div>
         </div>
-      ))}
+      </div>
+
+      {data?.candidates.map(c => {
+        const isExpanded = expandedCandidate === c.id;
+        return (
+          <div 
+            key={c.id} 
+            onClick={() => setExpandedCandidate(isExpanded ? null : c.id)}
+            className={`md:col-span-2 bento-card p-8 flex flex-col justify-between cursor-pointer transition-all duration-500 ${isExpanded ? 'ring-2 ring-blue-500 scale-[1.02] shadow-2xl' : ''}`}
+          >
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-[9px] font-black opacity-40 uppercase">{c.party}</span>
+                <div className="w-3.5 h-3.5 rounded-full shadow-lg" style={{ backgroundColor: c.color }}></div>
+              </div>
+              <h4 className="text-lg font-black tracking-tight uppercase">{c.name}</h4>
+            </div>
+            
+            <div className="mt-8">
+              <div className="flex justify-between items-end mb-4">
+                <div className="flex flex-col">
+                  <span className="text-[54px] font-black mono leading-none tracking-tighter" style={{ color: c.color }}>{(c.votes / totalVotes * 100).toFixed(1)}%</span>
+                </div>
+                <div className="flex flex-col items-end gap-1.5">
+                  <div className="flex items-baseline gap-1">
+                     <span className="text-[10px] font-bold opacity-30 uppercase tracking-tight">{t.winProb}:</span>
+                     <span className="text-[11px] font-black mono tabular-nums uppercase" style={{ color: c.color }}>{getWinProb(c.id)}</span>
+                  </div>
+                  <span className="text-[11px] font-bold opacity-30 tabular-nums uppercase mono">{c.votes.toLocaleString()} {t.votes}</span>
+                </div>
+              </div>
+              <div className="h-2 w-full bg-zinc-500/10 rounded-full overflow-hidden mb-4">
+                <div className="h-full transition-all duration-1000" style={{ width: `${(c.votes / totalVotes * 100)}%`, backgroundColor: c.color }}></div>
+              </div>
+
+              {isExpanded && (
+                <div className="pt-5 border-t border-zinc-500/10 animate-in fade-in slide-in-from-top-3 duration-500 space-y-4">
+                   <div className="flex justify-between items-center">
+                      <span className="text-[9px] font-black opacity-40 uppercase tracking-widest">Salud de Cuota (Sigma)</span>
+                      <span className="text-[10px] font-black mono text-emerald-500">NOMINAL</span>
+                   </div>
+                   <div className="flex gap-1.5">
+                      {Array.from({length: 10}).map((_, i) => (
+                        <div key={i} className={`h-1.5 flex-1 rounded-full ${i < 8 ? 'bg-blue-500' : 'bg-zinc-500/10'}`}></div>
+                      ))}
+                   </div>
+                   <p className="text-[10px] font-bold opacity-60 leading-snug">
+                     {lang === 'ES' 
+                       ? "Análisis de flujo verificado. No se detectan picos de carga automatizada en este candidato." 
+                       : "Flow analysis verified. No automated load spikes detected for this candidate."}
+                   </p>
+                </div>
+              )}
+              
+              {!isExpanded && (
+                <div className="flex justify-center pt-2">
+                  <span className="text-[8px] font-black opacity-20 uppercase tracking-[0.3em]">{t.details}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

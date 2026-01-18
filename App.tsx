@@ -6,7 +6,7 @@ import AuditorView from './components/AuditorView';
 import SystemView from './components/SystemView';
 import Timeline from './components/Timeline';
 import IntegrityMonitor from './components/IntegrityMonitor';
-import { Language, ViewMode, Theme } from './types';
+import { Language, ViewMode, Theme, Protocol } from './types';
 import { useElectionData } from './hooks/useElectionData';
 
 const App: React.FC = () => {
@@ -16,6 +16,8 @@ const App: React.FC = () => {
   const [accessibilityMode, setAccessibilityMode] = useState<'none' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'high-contrast'>('none');
   const [selectedDept, setSelectedDept] = useState<string>("Nivel Nacional");
   const [timeCursor, setTimeCursor] = useState<number>(100); 
+  const [targetProtocol, setTargetProtocol] = useState<Protocol | null>(null);
+  const [auditorSubTab, setAuditorSubTab] = useState<'stats' | 'dispersion' | 'alerts' | 'ledger'>('stats');
   
   const { data, loading } = useElectionData();
 
@@ -47,6 +49,13 @@ const App: React.FC = () => {
     };
   }, [data, timeCursor]);
 
+  const handleAlertJump = (protocol: Protocol) => {
+    setView('auditor');
+    setAuditorSubTab('ledger');
+    setTargetProtocol(protocol);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const t = {
     ES: { citizen: "CIUDADANO", auditor: "AUDITOR", ethos: "ETHOS", loading: "SINCRONIZANDO..." },
     EN: { citizen: "CITIZEN", auditor: "AUDITOR", ethos: "ETHOS", loading: "SYNCING..." }
@@ -55,12 +64,13 @@ const App: React.FC = () => {
   const isDark = theme === 'dark';
 
   return (
-    <div className={`min-h-screen flex flex-col transition-all duration-700 pb-56 ${isDark ? 'bg-black text-white' : 'bg-[#f5f5f7] text-[#1d1d1f]'}`}>
+    <div className={`min-h-screen flex flex-col transition-all duration-700 pb-64 ${isDark ? 'bg-black text-white' : 'bg-[#f5f5f7] text-[#1d1d1f]'}`}>
       <Header 
         lang={lang} setLang={setLang}
         theme={theme} setTheme={setTheme}
         accessibilityMode={accessibilityMode}
         setAccessibilityMode={setAccessibilityMode}
+        data={filteredData}
       />
       
       <main className="flex-grow px-4 md:px-12 pt-24 md:pt-28 max-w-[1600px] mx-auto w-full overflow-x-hidden">
@@ -107,26 +117,30 @@ const App: React.FC = () => {
             {view === 'auditor' && (
               <AuditorView 
                 lang={lang} data={filteredData} 
-                theme={theme} colorBlindMode={accessibilityMode !== 'none'} 
+                theme={theme} colorBlindMode={accessibilityMode !== 'none'}
+                activeTab={auditorSubTab}
+                setActiveTab={setAuditorSubTab}
+                preselectedProtocol={targetProtocol}
               />
             )}
             {view === 'system' && (
               <SystemView 
                 lang={lang} theme={theme} colorBlindMode={accessibilityMode !== 'none'} 
+                data={filteredData}
               />
             )}
           </div>
         )}
       </main>
 
-      <div className={`fixed bottom-0 left-0 right-0 p-4 md:p-8 backdrop-blur-3xl border-t transition-colors duration-500 z-[100] ${isDark ? 'bg-black/80 border-white/5' : 'bg-white/80 border-black/5'}`}>
-         <div className="max-w-4xl mx-auto">
-            <Timeline 
-              value={timeCursor} onChange={setTimeCursor} 
-              history={data?.history || []} theme={theme} lang={lang} 
-            />
-         </div>
-      </div>
+      <Timeline 
+        value={timeCursor} onChange={setTimeCursor} 
+        history={data?.history || []} 
+        theme={theme} lang={lang}
+        candidates={data?.candidates || []}
+        protocols={data?.latestProtocols || []}
+        onAlertClick={handleAlertJump}
+      />
     </div>
   );
 };
