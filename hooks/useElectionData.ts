@@ -10,7 +10,8 @@ const CONFIG = {
   owner: "userf8a2c4",
   repo: "centinel-engine",
   path: "data/summary.json",
-  branch: "main"
+  branch: "main",
+  engineBaseUrl: import.meta.env.VITE_ENGINE_BASE_URL as string | undefined
 };
 
 export const useElectionData = () => {
@@ -22,34 +23,69 @@ export const useElectionData = () => {
     const salt = Date.now();
     const rawUrl = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${CONFIG.path}?t=${salt}`;
     const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}?ref=${CONFIG.branch}`;
+    const engineUrl = CONFIG.engineBaseUrl
+      ? `${CONFIG.engineBaseUrl.replace(/\/+$/, '')}/${CONFIG.path}?t=${salt}`
+      : null;
+    const sameOriginUrl = typeof window !== 'undefined'
+      ? `${window.location.origin}/${CONFIG.path}?t=${salt}`
+      : null;
 
     let success = false;
     let errorMessage = "";
 
-    // INTENTO 1: GitHub Raw (Más rápido)
-    try {
-      const response = await fetch(rawUrl, {
-        method: 'GET',
-        mode: 'cors',
-        cache: 'no-store'
-      });
+    // INTENTO 1: Motor (datos directos desde la carpeta data del engine)
+    const engineCandidates = [engineUrl, sameOriginUrl].filter(Boolean) as string[];
+    for (const candidate of engineCandidates) {
+      if (success) break;
+      try {
+        const response = await fetch(candidate, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store'
+        });
 
-      if (response.ok) {
-        const jsonData: ElectionData = await response.json();
-        if (jsonData && jsonData.candidates) {
-          setData(jsonData);
-          setError(null);
-          success = true;
+        if (response.ok) {
+          const jsonData: ElectionData = await response.json();
+          if (jsonData && jsonData.candidates) {
+            setData(jsonData);
+            setError(null);
+            success = true;
+          }
+        } else {
+          errorMessage = `HTTP ${response.status} en Engine`;
         }
-      } else {
-        errorMessage = `HTTP ${response.status} en Raw`;
+      } catch (e: any) {
+        errorMessage = e.message;
+        console.warn("Intento Engine fallido, probando fuentes de respaldo...");
       }
-    } catch (e: any) {
-      errorMessage = e.message;
-      console.warn("Intento Raw fallido, probando API de respaldo...");
     }
 
-    // INTENTO 2: GitHub API (Respaldo robusto si falla el primero)
+    // INTENTO 2: GitHub Raw (Más rápido)
+    if (!success) {
+      try {
+        const response = await fetch(rawUrl, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store'
+        });
+
+        if (response.ok) {
+          const jsonData: ElectionData = await response.json();
+          if (jsonData && jsonData.candidates) {
+            setData(jsonData);
+            setError(null);
+            success = true;
+          }
+        } else {
+          errorMessage = `HTTP ${response.status} en Raw`;
+        }
+      } catch (e: any) {
+        errorMessage = e.message;
+        console.warn("Intento Raw fallido, probando API de respaldo...");
+      }
+    }
+
+    // INTENTO 3: GitHub API (Respaldo robusto si falla el primero)
     if (!success) {
       try {
         const apiResponse = await fetch(apiUrl, {

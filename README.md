@@ -16,5 +16,9 @@ View your app in AI Studio: https://ai.studio/apps/drive/1dPbwnqbfHwlFxcw7xd6PQ9
 1. Install dependencies:
    `npm install`
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
+3. (Opcional) Configura `VITE_ENGINE_BASE_URL` en `.env.local` para apuntar al backend
+   (ej. `http://localhost:3000`), así el frontend consume `data/summary.json` del engine.
+   Si sirves frontend y backend en el mismo dominio, el frontend también intentará
+   `/data/summary.json` en el origen actual automáticamente.
+4. Run the app:
    `npm run dev`
